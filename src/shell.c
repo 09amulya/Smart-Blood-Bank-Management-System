@@ -1,5 +1,3 @@
-#include "sync.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -9,27 +7,66 @@
 #include "blood.h"
 #include "scheduler.h"
 #include "logger.h"
-
-
-extern int create_process(const char *patient,
-                          const char *blood_group,
-                          int units,
-                          Priority priority);
+#include "sync.h"
 
 
 /* -------------------------------------------------
- * Parse Priority
+ * Existing process creation function
  * ------------------------------------------------- */
 
-static Priority parse_priority(const char *text)
+extern int create_process(
+    const char *patient,
+    const char *blood_group,
+    int units,
+    Priority priority
+);
+
+
+/* -------------------------------------------------
+ * Display process table
+ * ------------------------------------------------- */
+
+static void show_processes(void)
 {
-    if (strcasecmp(text, "critical") == 0)
-        return PRIO_CRITICAL;
+    if (process_count == 0)
+    {
+        printf("\nNo processes available.\n");
+        return;
+    }
 
-    if (strcasecmp(text, "urgent") == 0)
-        return PRIO_URGENT;
+    printf("\n");
+    printf("==============================================\n");
+    printf("              PROCESS TABLE\n");
+    printf("==============================================\n");
 
-    return PRIO_NORMAL;
+    printf(
+        "%-6s %-15s %-8s %-6s %-12s %-12s\n",
+        "PID",
+        "PATIENT",
+        "GROUP",
+        "UNITS",
+        "PRIORITY",
+        "STATE"
+    );
+
+    printf("----------------------------------------------\n");
+
+    for (int i = 0; i < process_count; i++)
+    {
+        PCB *p = &process_table[i];
+
+        printf(
+            "%-6d %-15s %-8s %-6d %-12s %-12s\n",
+            p->pid,
+            p->patient,
+            p->blood_group,
+            p->units,
+            priority_name(p->priority),
+            state_name(p->state)
+        );
+    }
+
+    printf("==============================================\n");
 }
 
 
@@ -59,6 +96,8 @@ static void print_help(void)
 
     printf("mutex <on|off>               Run mutex race demo\n");
 
+    printf("lockvariable                 Run Lock Variable demo\n");
+
     printf("peterson                     Run Peterson's algorithm\n");
 
     printf("bakery                       Run Lamport Bakery algorithm\n");
@@ -80,182 +119,55 @@ static void print_help(void)
 
 
 /* -------------------------------------------------
- * Process Table
+ * Parse priority
  * ------------------------------------------------- */
 
-static void print_process_table(void)
+static Priority parse_priority(const char *text)
 {
-    int i;
+    if (strcasecmp(text, "critical") == 0)
+        return PRIO_CRITICAL;
 
-    printf("\n================ PROCESS TABLE ================\n");
+    if (strcasecmp(text, "urgent") == 0)
+        return PRIO_URGENT;
 
-    if (process_count == 0) {
-        printf("No processes created.\n");
-        return;
-    }
+    if (strcasecmp(text, "normal") == 0)
+        return PRIO_NORMAL;
 
-    printf("%-5s %-15s %-6s %-6s %-10s %-12s\n",
-           "PID",
-           "PATIENT",
-           "GROUP",
-           "UNITS",
-           "PRIORITY",
-           "STATE");
-
-    printf("-------------------------------------------------------------\n");
-
-    for (i = 0; i < process_count; i++) {
-
-        PCB *p = &process_table[i];
-
-        printf("%-5d %-15s %-6s %-6d %-10s %-12s\n",
-               p->pid,
-               p->patient,
-               p->blood_group,
-               p->units,
-               priority_name(p->priority),
-               state_name(p->state));
-    }
-
-    printf("=============================================================\n");
+    /* Default */
+    return PRIO_NORMAL;
 }
 
 
 /* -------------------------------------------------
- * Request Handler
+ * Mutex
  * ------------------------------------------------- */
 
-static void handle_request(char *args)
+static void handle_mutex(char *mode)
 {
-    char patient[32];
-    char group[4];
-    char priority_text[16];
-
-    int units;
-
-    if (sscanf(args,
-               "%31s %3s %d %15s",
-               patient,
-               group,
-               &units,
-               priority_text) != 4) {
-
-        printf("Usage:\n");
-        printf("request <patient> <group> <units> <priority>\n");
-
-        printf("Example:\n");
-        printf("request Rahul O- 2 critical\n");
-
-        return;
-    }
-
-    if (units <= 0) {
-        printf("Units must be greater than 0.\n");
-        return;
-    }
-
-    Priority priority = parse_priority(priority_text);
-
-    int pid = create_process(
-        patient,
-        group,
-        units,
-        priority
-    );
-
-    if (pid < 0) {
-        printf("Failed to create process.\n");
-        return;
-    }
-
-    printf("\nBlood request created successfully.\n");
-
-    printf("PID      : %d\n", pid);
-    printf("Patient  : %s\n", patient);
-    printf("Group    : %s\n", group);
-    printf("Units    : %d\n", units);
-    printf("Priority : %s\n",
-           priority_name(priority));
-}
-
-
-/* -------------------------------------------------
- * Scheduler Handler
- * ------------------------------------------------- */
-
-static void handle_schedule(char *args)
-{
-    SchedAlgo algorithm;
-
-    if (scheduler_parse(args, &algorithm) != 0) {
-
-        printf("Unknown scheduling algorithm.\n");
-
-        printf("Available algorithms:\n");
-        printf("  fcfs\n");
-        printf("  priority\n");
-
-        return;
-    }
-
-    scheduler_set(algorithm);
-
-    printf("Selected scheduler: %s\n",
-           scheduler_name(algorithm));
-}
-
-
-/* -------------------------------------------------
- * Run Scheduler
- * ------------------------------------------------- */
-
-static void handle_run(void)
-{
-    printf("\nStarting scheduler...\n");
-
-    int executed = scheduler_run(1);
-
-    printf("\nScheduler finished.\n");
-
-    printf("Processes executed: %d\n",
-           executed);
-}
-
-
-/* -------------------------------------------------
- * Logs
- * ------------------------------------------------- */
-
-static void handle_logs(void)
-{
-    show_logs();
-}
-
-
-/* -------------------------------------------------
- * Mutex Demo
- * ------------------------------------------------- */
-
-static void handle_mutex(const char *mode)
-{
-    if (strcmp(mode, "on") == 0) {
-
+    if (strcasecmp(mode, "on") == 0)
+    {
         run_mutex_demo(1);
-
-    } else if (strcmp(mode, "off") == 0) {
-
+    }
+    else if (strcasecmp(mode, "off") == 0)
+    {
         run_mutex_demo(0);
-
-    } else {
-
+    }
+    else
+    {
         printf("Usage: mutex <on|off>\n");
     }
 }
 
 
 /* -------------------------------------------------
- * Peterson Demo
+ * Synchronization demos
  * ------------------------------------------------- */
+
+static void handle_lock_variable(void)
+{
+    run_lock_variable_demo();
+}
+
 
 static void handle_peterson(void)
 {
@@ -263,19 +175,11 @@ static void handle_peterson(void)
 }
 
 
-/* -------------------------------------------------
- * Bakery Demo
- * ------------------------------------------------- */
-
 static void handle_bakery(void)
 {
     run_bakery_demo();
 }
 
-
-/* -------------------------------------------------
- * Test-and-Set Demo
- * ------------------------------------------------- */
 
 static void handle_test_and_set(void)
 {
@@ -283,19 +187,11 @@ static void handle_test_and_set(void)
 }
 
 
-/* -------------------------------------------------
- * Semaphore Demo
- * ------------------------------------------------- */
-
 static void handle_semaphore(void)
 {
     run_semaphore_demo();
 }
 
-
-/* -------------------------------------------------
- * Monitor Demo
- * ------------------------------------------------- */
 
 static void handle_monitor(void)
 {
@@ -303,19 +199,11 @@ static void handle_monitor(void)
 }
 
 
-/* -------------------------------------------------
- * Bounded Buffer Demo
- * ------------------------------------------------- */
-
 static void handle_bounded_buffer(void)
 {
     run_bounded_buffer_demo();
 }
 
-
-/* -------------------------------------------------
- * Dining Philosophers Demo
- * ------------------------------------------------- */
 
 static void handle_philosophers(void)
 {
@@ -324,7 +212,7 @@ static void handle_philosophers(void)
 
 
 /* -------------------------------------------------
- * Main
+ * Main Shell
  * ------------------------------------------------- */
 
 int main(void)
@@ -332,20 +220,18 @@ int main(void)
     char input[256];
 
     printf("\n");
-    printf("========================================\n");
-    printf("          RAKTSETU PROTOTYPE\n");
-    printf("       Smart Blood Bank OS Model\n");
-    printf("========================================\n");
+    printf("====================================\n");
+    printf("       RAKTSETU BLOOD BANK OS\n");
+    printf("====================================\n");
+    printf("Type 'help' to see available commands.\n");
 
-    printf("\nType 'help' to see available commands.\n");
 
-    while (1) {
-
+    while (1)
+    {
         printf("\nraktsetu> ");
 
-        if (fgets(input, sizeof(input), stdin) == NULL) {
+        if (fgets(input, sizeof(input), stdin) == NULL)
             break;
-        }
 
         input[strcspn(input, "\n")] = '\0';
 
@@ -354,131 +240,198 @@ int main(void)
 
 
         /* HELP */
-        if (strcmp(input, "help") == 0) {
-
+        if (strcmp(input, "help") == 0)
+        {
             print_help();
         }
 
 
-        /* PROCESS TABLE */
-        else if (strcmp(input, "ps") == 0) {
+        /* EXIT */
+        else if (strcmp(input, "exit") == 0)
+        {
+            printf("Exiting RaktSetu...\n");
+            break;
+        }
 
-            print_process_table();
+
+        /* PROCESS TABLE */
+        else if (strcmp(input, "ps") == 0)
+        {
+            show_processes();
         }
 
 
         /* BLOOD INVENTORY */
-        else if (strcmp(input, "blood") == 0) {
-
-            printf("\n========== BLOOD INVENTORY ==========\n");
-
+        else if (strcmp(input, "blood") == 0)
+        {
             print_inventory();
-
-            printf("=====================================\n");
-        }
-
-
-        /* RUN SCHEDULER */
-        else if (strcmp(input, "run") == 0) {
-
-            handle_run();
         }
 
 
         /* LOGS */
-        else if (strcmp(input, "logs") == 0) {
-
-            handle_logs();
+        else if (strcmp(input, "logs") == 0)
+        {
+            show_logs();
         }
 
 
         /* MUTEX */
-        else if (strncmp(input, "mutex ", 6) == 0) {
-
+        else if (strncmp(input, "mutex ", 6) == 0)
+        {
             handle_mutex(input + 6);
         }
 
 
-        /* PETERSON */
-        else if (strcmp(input, "peterson") == 0) {
+        /* LOCK VARIABLE */
+        else if (strcmp(input, "lockvariable") == 0)
+        {
+            handle_lock_variable();
+        }
 
+
+        /* PETERSON */
+        else if (strcmp(input, "peterson") == 0)
+        {
             handle_peterson();
         }
 
 
         /* BAKERY */
-        else if (strcmp(input, "bakery") == 0) {
-
+        else if (strcmp(input, "bakery") == 0)
+        {
             handle_bakery();
         }
 
 
-        /* TEST-AND-SET */
-        else if (strcmp(input, "testandset") == 0) {
-
+        /* TEST AND SET */
+        else if (strcmp(input, "testandset") == 0)
+        {
             handle_test_and_set();
         }
 
 
         /* SEMAPHORE */
-        else if (strcmp(input, "semaphore") == 0) {
-
+        else if (strcmp(input, "semaphore") == 0)
+        {
             handle_semaphore();
         }
 
 
         /* MONITOR */
-        else if (strcmp(input, "monitor") == 0) {
-
+        else if (strcmp(input, "monitor") == 0)
+        {
             handle_monitor();
         }
 
 
         /* BOUNDED BUFFER */
-        else if (strcmp(input, "boundedbuffer") == 0) {
-
+        else if (strcmp(input, "boundedbuffer") == 0)
+        {
             handle_bounded_buffer();
         }
 
 
         /* DINING PHILOSOPHERS */
-        else if (strcmp(input, "philosophers") == 0) {
-
+        else if (strcmp(input, "philosophers") == 0)
+        {
             handle_philosophers();
         }
 
 
-        /* EXIT */
-        else if (strcmp(input, "exit") == 0) {
-
-            printf("Shutting down RaktSetu prototype...\n");
-
-            break;
-        }
-
-
         /* REQUEST */
-        else if (strncmp(input, "request ", 8) == 0) {
+        else if (strncmp(input, "request ", 8) == 0)
+        {
+            char patient[32];
+            char group[4];
+            char priority_text[20];
+            int units;
 
-            handle_request(input + 8);
+            int result = sscanf(
+                input + 8,
+                "%31s %3s %d %19s",
+                patient,
+                group,
+                &units,
+                priority_text
+            );
+
+            if (result != 4)
+            {
+                printf(
+                    "Usage: request <patient> <group> <units> <priority>\n"
+                );
+
+                printf(
+                    "Priority: critical | urgent | normal\n"
+                );
+
+                continue;
+            }
+
+            Priority priority = parse_priority(priority_text);
+
+            int pid = create_process(
+                patient,
+                group,
+                units,
+                priority
+            );
+
+            if (pid >= 0)
+            {
+                printf(
+                    "Process created successfully. PID: %d\n",
+                    pid
+                );
+            }
+            else
+            {
+                printf("Failed to create process.\n");
+            }
         }
 
 
         /* SCHEDULER */
-        else if (strncmp(input, "schedule ", 9) == 0) {
+        else if (strncmp(input, "schedule ", 9) == 0)
+        {
+            SchedAlgo algo;
 
-            handle_schedule(input + 9);
+            if (scheduler_parse(input + 9, &algo) == 0)
+            {
+                scheduler_set(algo);
+
+                printf(
+                    "Scheduler set to %s.\n",
+                    scheduler_name(algo)
+                );
+            }
+            else
+            {
+                printf("Usage: schedule <fcfs|priority>\n");
+            }
+        }
+
+
+        /* RUN */
+        else if (strcmp(input, "run") == 0)
+        {
+            int executed = scheduler_run(1);
+
+            printf(
+                "Scheduler executed %d process(es).\n",
+                executed
+            );
         }
 
 
         /* UNKNOWN COMMAND */
-        else {
-
+        else
+        {
             printf("Unknown command: %s\n", input);
-
-            printf("Type 'help' for available commands.\n");
+            printf("Type 'help' to see available commands.\n");
         }
     }
+
 
     return 0;
 }
