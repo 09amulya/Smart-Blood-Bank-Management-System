@@ -21,4 +21,8 @@ void run_bounded_buffer_demo(void);
 
 void run_philosophers_demo(void);
 
+void run_reader_writer_demo(void);
+
+void run_sleeping_barber_demo(void);
+
 #endif

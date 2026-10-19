@@ -96,6 +96,8 @@ static void print_help(void)
     printf("monitor                      Run monitor demo\n");
     printf("boundedbuffer                Run producer-consumer demo\n");
     printf("philosophers                 Run Dining Philosophers demo\n");
+    printf("readerwriter                 Run Reader-Writer demo\n");
+    printf("barber                       Run Sleeping Barber demo\n");
 
     printf("exit                         Exit program\n");
 
@@ -180,6 +182,16 @@ static void handle_philosophers(void)
     run_philosophers_demo();
 }
 
+static void handle_reader_writer(void)
+{
+    run_reader_writer_demo();
+}
+
+static void handle_sleeping_barber(void)
+{
+    run_sleeping_barber_demo();
+}
+
 /* -------------------------------------------------
  * Main Shell
  * ------------------------------------------------- */
@@ -205,130 +217,75 @@ int main(void)
         if (strlen(input) == 0)
             continue;
 
-        /* -------------------------------------------------
-         * Help
-         * ------------------------------------------------- */
         if (strcmp(input, "help") == 0)
         {
             print_help();
         }
-
-        /* -------------------------------------------------
-         * Exit
-         * ------------------------------------------------- */
         else if (strcmp(input, "exit") == 0)
         {
             printf("Exiting RaktSetu...\n");
             break;
         }
-
-        /* -------------------------------------------------
-         * Process table
-         * ------------------------------------------------- */
         else if (strcmp(input, "ps") == 0)
         {
             show_processes();
         }
-
-        /* -------------------------------------------------
-         * Blood inventory
-         * ------------------------------------------------- */
         else if (strcmp(input, "blood") == 0)
         {
             print_inventory();
         }
-
-        /* -------------------------------------------------
-         * Logs
-         * ------------------------------------------------- */
         else if (strcmp(input, "logs") == 0)
         {
             show_logs();
         }
-
-        /* -------------------------------------------------
-         * Mutex
-         * ------------------------------------------------- */
         else if (strncmp(input, "mutex ", 6) == 0)
         {
             handle_mutex(input + 6);
         }
-
-        /* -------------------------------------------------
-         * Lock Variable
-         * ------------------------------------------------- */
         else if (strcmp(input, "lockvariable") == 0)
         {
             handle_lock_variable();
         }
-
-        /* -------------------------------------------------
-         * Strict Alternation
-         * ------------------------------------------------- */
         else if (strcmp(input, "strict") == 0)
         {
             handle_strict_alternation();
         }
-
-        /* -------------------------------------------------
-         * Peterson
-         * ------------------------------------------------- */
         else if (strcmp(input, "peterson") == 0)
         {
             handle_peterson();
         }
-
-        /* -------------------------------------------------
-         * Lamport Bakery
-         * ------------------------------------------------- */
         else if (strcmp(input, "bakery") == 0)
         {
             handle_bakery();
         }
-
-        /* -------------------------------------------------
-         * Test-and-Set
-         * ------------------------------------------------- */
         else if (strcmp(input, "testandset") == 0)
         {
             handle_test_and_set();
         }
-
-        /* -------------------------------------------------
-         * Semaphore
-         * ------------------------------------------------- */
         else if (strcmp(input, "semaphore") == 0)
         {
             handle_semaphore();
         }
-
-        /* -------------------------------------------------
-         * Monitor
-         * ------------------------------------------------- */
         else if (strcmp(input, "monitor") == 0)
         {
             handle_monitor();
         }
-
-        /* -------------------------------------------------
-         * Bounded Buffer
-         * ------------------------------------------------- */
         else if (strcmp(input, "boundedbuffer") == 0)
         {
             handle_bounded_buffer();
         }
-
-        /* -------------------------------------------------
-         * Dining Philosophers
-         * ------------------------------------------------- */
         else if (strcmp(input, "philosophers") == 0)
         {
             handle_philosophers();
         }
-
-        /* -------------------------------------------------
-         * Create process
-         * ------------------------------------------------- */
+        else if (strcmp(input, "readerwriter") == 0)
+        {
+            handle_reader_writer();
+        }
+        else if (strcmp(input, "barber") == 0)
+        {
+            handle_sleeping_barber();
+        }
         else if (strncmp(input, "request ", 8) == 0)
         {
             char patient[32];
@@ -375,10 +332,6 @@ int main(void)
             else
                 printf("Failed to create process.\n");
         }
-
-        /* -------------------------------------------------
-         * Scheduler selection
-         * ------------------------------------------------- */
         else if (strncmp(input, "schedule ", 9) == 0)
         {
             SchedAlgo algo;
@@ -399,10 +352,6 @@ int main(void)
                 );
             }
         }
-
-        /* -------------------------------------------------
-         * Run scheduler
-         * ------------------------------------------------- */
         else if (strcmp(input, "run") == 0)
         {
             int executed = scheduler_run(1);
@@ -412,10 +361,6 @@ int main(void)
                 executed
             );
         }
-
-        /* -------------------------------------------------
-         * Unknown command
-         * ------------------------------------------------- */
         else
         {
             printf("Unknown command: %s\n", input);
