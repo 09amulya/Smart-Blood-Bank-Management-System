@@ -7,7 +7,14 @@
 #include "blood.h"
 #include "scheduler.h"
 #include "logger.h"
+
 #include "sync.h"
+#include "memory.h"
+#include "paging.h"
+#include "virtual_memory.h"
+#include "file_allocation.h"
+#include "disk_scheduling.h"
+
 
 /* -------------------------------------------------
  * Existing process creation function
@@ -86,6 +93,7 @@ static void print_help(void)
 
     printf("logs                         Show process state logs\n");
 
+
     printf("mutex <on|off>               Run mutex race demo\n");
     printf("lockvariable                 Run Lock Variable demo\n");
     printf("strict                       Run Strict Alternation demo\n");
@@ -98,6 +106,28 @@ static void print_help(void)
     printf("philosophers                 Run Dining Philosophers demo\n");
     printf("readerwriter                 Run Reader-Writer demo\n");
     printf("barber                       Run Sleeping Barber demo\n");
+
+    printf("memfit                       Compare First/Best/Worst Fit\n");
+    printf("memfixed                     Demonstrate fixed partitions\n");
+    printf("paging                       Demonstrate paging\n");
+    printf("segmentation                 Demonstrate segmentation\n");
+    printf("segpaging                    Demonstrate segmented paging\n");
+    printf("demandpaging                 Demonstrate demand paging\n");
+    printf("fifo                         FIFO page replacement\n");
+    printf("lru                          LRU page replacement\n");
+    printf("optimal                      Optimal page replacement\n");
+    printf("lfu                          LFU page replacement\n");
+    printf("belady                       Demonstrate Belady's anomaly\n");
+    printf("thrashing                    Demonstrate thrashing\n");
+    printf("contiguous                   Contiguous file allocation\n");
+    printf("linked                       Linked file allocation\n");
+    printf("indexed                      Indexed file allocation\n");
+    printf("fcfs                         FCFS disk scheduling\n");
+    printf("sstf                         SSTF disk scheduling\n");
+    printf("scan                         SCAN disk scheduling\n");
+    printf("cscan                        C-SCAN disk scheduling\n");
+    printf("look                         LOOK disk scheduling\n");
+
 
     printf("exit                         Exit program\n");
 
@@ -286,6 +316,89 @@ int main(void)
         {
             handle_sleeping_barber();
         }
+        else if (strcmp(input, "memfit") == 0)
+        {
+            memory_fit_demo();
+        }
+       else if (strcmp(input, "memfixed") == 0)
+        {
+            memory_fixed_demo();
+        }
+
+        else if (strcmp(input, "paging") == 0)
+        {
+            paging_demo();
+        }
+        else if (strcmp(input, "segmentation") == 0)
+        {
+            segmentation_demo();
+        }
+        else if (strcmp(input, "segpaging") == 0)
+        {
+            segmented_paging_demo();
+        }
+        else if (strcmp(input, "demandpaging") == 0)
+        {
+            demand_paging_demo();
+        }
+        else if (strcmp(input, "fifo") == 0)
+        {
+            fifo_demo();
+        }
+        else if (strcmp(input, "lru") == 0)
+        {
+            lru_demo();
+        }
+        else if (strcmp(input, "optimal") == 0)
+        {
+            optimal_demo();
+        }
+        else if (strcmp(input, "lfu") == 0)
+        {
+            lfu_demo();
+        }
+        else if (strcmp(input, "belady") == 0)
+        {
+            belady_anomaly_demo();
+        }
+        else if (strcmp(input, "thrashing") == 0)
+        {
+            thrashing_demo();
+        }
+        else if (strcmp(input, "contiguous") == 0)
+        {
+            contiguous_allocation_demo();
+        }
+        else if (strcmp(input, "linked") == 0)
+        {
+            linked_allocation_demo();
+        }
+        else if (strcmp(input, "indexed") == 0)
+        {
+            indexed_allocation_demo();
+        }
+        else if (strcmp(input, "fcfs") == 0)
+        {
+            fcfs_disk_demo();
+        }
+        else if (strcmp(input, "sstf") == 0)
+        {
+            sstf_disk_demo();
+        }
+        else if (strcmp(input, "scan") == 0)
+        {
+            scan_disk_demo();
+        }
+        else if (strcmp(input, "cscan") == 0)
+        {
+            cscan_disk_demo();
+        }
+        else if (strcmp(input, "look") == 0)
+        {
+            look_disk_demo();
+        }
+
+
         else if (strncmp(input, "request ", 8) == 0)
         {
             char patient[32];
@@ -370,3 +483,4 @@ int main(void)
 
     return 0;
 }
+// ..
