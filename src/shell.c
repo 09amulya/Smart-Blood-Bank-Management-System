@@ -65,6 +65,12 @@ static void print_help(void)
 
     printf("testandset                   Run Test-and-Set algorithm\n");
 
+    printf("semaphore                    Run binary/counting semaphore demo\n");
+
+    printf("monitor                      Run monitor demo\n");
+
+    printf("boundedbuffer                Run producer-consumer demo\n");
+
     printf("exit                         Exit program\n");
 
     printf("========================================\n");
@@ -276,6 +282,36 @@ static void handle_test_and_set(void)
 
 
 /* -------------------------------------------------
+ * Semaphore Demo
+ * ------------------------------------------------- */
+
+static void handle_semaphore(void)
+{
+    run_semaphore_demo();
+}
+
+
+/* -------------------------------------------------
+ * Monitor Demo
+ * ------------------------------------------------- */
+
+static void handle_monitor(void)
+{
+    run_monitor_demo();
+}
+
+
+/* -------------------------------------------------
+ * Bounded Buffer Demo
+ * ------------------------------------------------- */
+
+static void handle_bounded_buffer(void)
+{
+    run_bounded_buffer_demo();
+}
+
+
+/* -------------------------------------------------
  * Main
  * ------------------------------------------------- */
 
@@ -308,29 +344,17 @@ int main(void)
             continue;
 
 
-        /* -------------------------------------------------
-         * Help
-         * ------------------------------------------------- */
-
         if (strcmp(input, "help") == 0) {
 
             print_help();
         }
 
 
-        /* -------------------------------------------------
-         * Process Table
-         * ------------------------------------------------- */
-
         else if (strcmp(input, "ps") == 0) {
 
             print_process_table();
         }
 
-
-        /* -------------------------------------------------
-         * Blood Inventory
-         * ------------------------------------------------- */
 
         else if (strcmp(input, "blood") == 0) {
 
@@ -342,19 +366,11 @@ int main(void)
         }
 
 
-        /* -------------------------------------------------
-         * Run Scheduler
-         * ------------------------------------------------- */
-
         else if (strcmp(input, "run") == 0) {
 
             handle_run();
         }
 
-
-        /* -------------------------------------------------
-         * Logs
-         * ------------------------------------------------- */
 
         else if (strcmp(input, "logs") == 0) {
 
@@ -362,19 +378,11 @@ int main(void)
         }
 
 
-        /* -------------------------------------------------
-         * Mutex
-         * ------------------------------------------------- */
-
         else if (strncmp(input, "mutex ", 6) == 0) {
 
             handle_mutex(input + 6);
         }
 
-
-        /* -------------------------------------------------
-         * Peterson
-         * ------------------------------------------------- */
 
         else if (strcmp(input, "peterson") == 0) {
 
@@ -382,19 +390,11 @@ int main(void)
         }
 
 
-        /* -------------------------------------------------
-         * Bakery
-         * ------------------------------------------------- */
-
         else if (strcmp(input, "bakery") == 0) {
 
             handle_bakery();
         }
 
-
-        /* -------------------------------------------------
-         * Test-and-Set
-         * ------------------------------------------------- */
 
         else if (strcmp(input, "testandset") == 0) {
 
@@ -402,9 +402,23 @@ int main(void)
         }
 
 
-        /* -------------------------------------------------
-         * Exit
-         * ------------------------------------------------- */
+        else if (strcmp(input, "semaphore") == 0) {
+
+            handle_semaphore();
+        }
+
+
+        else if (strcmp(input, "monitor") == 0) {
+
+            handle_monitor();
+        }
+
+
+        else if (strcmp(input, "boundedbuffer") == 0) {
+
+            handle_bounded_buffer();
+        }
+
 
         else if (strcmp(input, "exit") == 0) {
 
@@ -414,29 +428,17 @@ int main(void)
         }
 
 
-        /* -------------------------------------------------
-         * Request
-         * ------------------------------------------------- */
-
         else if (strncmp(input, "request ", 8) == 0) {
 
             handle_request(input + 8);
         }
 
 
-        /* -------------------------------------------------
-         * Schedule
-         * ------------------------------------------------- */
-
         else if (strncmp(input, "schedule ", 9) == 0) {
 
             handle_schedule(input + 9);
         }
 
-
-        /* -------------------------------------------------
-         * Unknown Command
-         * ------------------------------------------------- */
 
         else {
 

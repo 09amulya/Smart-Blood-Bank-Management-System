@@ -16,7 +16,10 @@ SRC = src/shell.c \
       src/sync/race_mutex.c \
       src/sync/peterson.c \
       src/sync/bakery.c \
-      src/sync/test_and_set.c
+      src/sync/test_and_set.c \
+      src/sync/semaphore.c \
+      src/sync/monitor.c \
+      src/sync/bounded_buffer.c
 
 
 OBJ = $(SRC:.c=.o)
