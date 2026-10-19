@@ -1,3 +1,5 @@
+#include "sync.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -9,12 +11,6 @@
 #include "logger.h"
 
 
-/*
- * process.c will provide this function.
- *
- * If your teammate uses a different function signature,
- * we will change this declaration to match it.
- */
 extern int create_process(const char *patient,
                           const char *blood_group,
                           int units,
@@ -22,7 +18,7 @@ extern int create_process(const char *patient,
 
 
 /* -------------------------------------------------
- * Utility functions
+ * Parse Priority
  * ------------------------------------------------- */
 
 static Priority parse_priority(const char *text)
@@ -38,7 +34,7 @@ static Priority parse_priority(const char *text)
 
 
 /* -------------------------------------------------
- * HELP command
+ * Help
  * ------------------------------------------------- */
 
 static void print_help(void)
@@ -61,6 +57,20 @@ static void print_help(void)
 
     printf("logs                         Show process state logs\n");
 
+    printf("mutex <on|off>               Run mutex race demo\n");
+
+    printf("peterson                     Run Peterson's algorithm\n");
+
+    printf("bakery                       Run Lamport Bakery algorithm\n");
+
+    printf("testandset                   Run Test-and-Set algorithm\n");
+
+    printf("semaphore                    Run binary/counting semaphore demo\n");
+
+    printf("monitor                      Run monitor demo\n");
+
+    printf("boundedbuffer                Run producer-consumer demo\n");
+
     printf("exit                         Exit program\n");
 
     printf("========================================\n");
@@ -68,7 +78,7 @@ static void print_help(void)
 
 
 /* -------------------------------------------------
- * Process table
+ * Process Table
  * ------------------------------------------------- */
 
 static void print_process_table(void)
@@ -110,7 +120,7 @@ static void print_process_table(void)
 
 
 /* -------------------------------------------------
- * REQUEST command
+ * Request Handler
  * ------------------------------------------------- */
 
 static void handle_request(char *args)
@@ -118,13 +128,8 @@ static void handle_request(char *args)
     char patient[32];
     char group[4];
     char priority_text[16];
-    int units;
 
-    /*
-     * Expected:
-     *
-     * request Rahul O- 2 critical
-     */
+    int units;
 
     if (sscanf(args,
                "%31s %3s %d %15s",
@@ -135,6 +140,7 @@ static void handle_request(char *args)
 
         printf("Usage:\n");
         printf("request <patient> <group> <units> <priority>\n");
+
         printf("Example:\n");
         printf("request Rahul O- 2 critical\n");
 
@@ -166,12 +172,13 @@ static void handle_request(char *args)
     printf("Patient  : %s\n", patient);
     printf("Group    : %s\n", group);
     printf("Units    : %d\n", units);
-    printf("Priority : %s\n", priority_name(priority));
+    printf("Priority : %s\n",
+           priority_name(priority));
 }
 
 
 /* -------------------------------------------------
- * SCHEDULE command
+ * Scheduler Handler
  * ------------------------------------------------- */
 
 static void handle_schedule(char *args)
@@ -197,7 +204,7 @@ static void handle_schedule(char *args)
 
 
 /* -------------------------------------------------
- * RUN command
+ * Run Scheduler
  * ------------------------------------------------- */
 
 static void handle_run(void)
@@ -207,12 +214,14 @@ static void handle_run(void)
     int executed = scheduler_run(1);
 
     printf("\nScheduler finished.\n");
-    printf("Processes executed: %d\n", executed);
+
+    printf("Processes executed: %d\n",
+           executed);
 }
 
 
 /* -------------------------------------------------
- * LOGS command
+ * Logs
  * ------------------------------------------------- */
 
 static void handle_logs(void)
@@ -222,7 +231,88 @@ static void handle_logs(void)
 
 
 /* -------------------------------------------------
- * Command loop
+ * Mutex Demo
+ * ------------------------------------------------- */
+
+static void handle_mutex(const char *mode)
+{
+    if (strcmp(mode, "on") == 0) {
+
+        run_mutex_demo(1);
+
+    } else if (strcmp(mode, "off") == 0) {
+
+        run_mutex_demo(0);
+
+    } else {
+
+        printf("Usage: mutex <on|off>\n");
+    }
+}
+
+
+/* -------------------------------------------------
+ * Peterson Demo
+ * ------------------------------------------------- */
+
+static void handle_peterson(void)
+{
+    run_peterson_demo();
+}
+
+
+/* -------------------------------------------------
+ * Bakery Demo
+ * ------------------------------------------------- */
+
+static void handle_bakery(void)
+{
+    run_bakery_demo();
+}
+
+
+/* -------------------------------------------------
+ * Test-and-Set Demo
+ * ------------------------------------------------- */
+
+static void handle_test_and_set(void)
+{
+    run_test_and_set_demo();
+}
+
+
+/* -------------------------------------------------
+ * Semaphore Demo
+ * ------------------------------------------------- */
+
+static void handle_semaphore(void)
+{
+    run_semaphore_demo();
+}
+
+
+/* -------------------------------------------------
+ * Monitor Demo
+ * ------------------------------------------------- */
+
+static void handle_monitor(void)
+{
+    run_monitor_demo();
+}
+
+
+/* -------------------------------------------------
+ * Bounded Buffer Demo
+ * ------------------------------------------------- */
+
+static void handle_bounded_buffer(void)
+{
+    run_bounded_buffer_demo();
+}
+
+
+/* -------------------------------------------------
+ * Main
  * ------------------------------------------------- */
 
 int main(void)
@@ -241,18 +331,18 @@ int main(void)
 
         printf("\nraktsetu> ");
 
-        if (fgets(input, sizeof(input), stdin) == NULL)
-            break;
+        if (fgets(input,
+                  sizeof(input),
+                  stdin) == NULL) {
 
-        /* Remove newline */
+            break;
+        }
+
         input[strcspn(input, "\n")] = '\0';
 
-        /* Ignore empty input */
         if (strlen(input) == 0)
             continue;
 
-
-        /* ---------------- HELP ---------------- */
 
         if (strcmp(input, "help") == 0) {
 
@@ -260,15 +350,11 @@ int main(void)
         }
 
 
-        /* ---------------- PS ---------------- */
-
         else if (strcmp(input, "ps") == 0) {
 
             print_process_table();
         }
 
-
-        /* ---------------- BLOOD ---------------- */
 
         else if (strcmp(input, "blood") == 0) {
 
@@ -280,15 +366,11 @@ int main(void)
         }
 
 
-        /* ---------------- RUN ---------------- */
-
         else if (strcmp(input, "run") == 0) {
 
             handle_run();
         }
 
-
-        /* ---------------- LOGS ---------------- */
 
         else if (strcmp(input, "logs") == 0) {
 
@@ -296,7 +378,47 @@ int main(void)
         }
 
 
-        /* ---------------- EXIT ---------------- */
+        else if (strncmp(input, "mutex ", 6) == 0) {
+
+            handle_mutex(input + 6);
+        }
+
+
+        else if (strcmp(input, "peterson") == 0) {
+
+            handle_peterson();
+        }
+
+
+        else if (strcmp(input, "bakery") == 0) {
+
+            handle_bakery();
+        }
+
+
+        else if (strcmp(input, "testandset") == 0) {
+
+            handle_test_and_set();
+        }
+
+
+        else if (strcmp(input, "semaphore") == 0) {
+
+            handle_semaphore();
+        }
+
+
+        else if (strcmp(input, "monitor") == 0) {
+
+            handle_monitor();
+        }
+
+
+        else if (strcmp(input, "boundedbuffer") == 0) {
+
+            handle_bounded_buffer();
+        }
+
 
         else if (strcmp(input, "exit") == 0) {
 
@@ -306,15 +428,11 @@ int main(void)
         }
 
 
-        /* ---------------- REQUEST ---------------- */
-
         else if (strncmp(input, "request ", 8) == 0) {
 
             handle_request(input + 8);
         }
 
-
-        /* ---------------- SCHEDULE ---------------- */
 
         else if (strncmp(input, "schedule ", 9) == 0) {
 
@@ -322,11 +440,10 @@ int main(void)
         }
 
 
-        /* ---------------- UNKNOWN ---------------- */
-
         else {
 
             printf("Unknown command: %s\n", input);
+
             printf("Type 'help' for available commands.\n");
         }
     }
