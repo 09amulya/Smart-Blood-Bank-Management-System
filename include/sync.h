@@ -5,6 +5,8 @@ void run_mutex_demo(int use_mutex);
 
 void run_lock_variable_demo(void);
 
+void run_strict_alternation_demo(void);
+
 void run_peterson_demo(void);
 
 void run_bakery_demo(void);
