@@ -7,7 +7,24 @@
 #include "blood.h"
 #include "scheduler.h"
 #include "logger.h"
+<<<<<<< Updated upstream
 #include "sync.h"
+=======
+#include "memory.h"
+
+
+/*
+ * process.c will provide this function.
+ *
+ * If your teammate uses a different function signature,
+ * we will change this declaration to match it.
+ */
+extern int create_process(const char *patient,
+                          const char *blood_group,
+                          int units,
+                          Priority priority);
+
+>>>>>>> Stashed changes
 
 /* -------------------------------------------------
  * Existing process creation function
@@ -86,6 +103,8 @@ static void print_help(void)
 
     printf("logs                         Show process state logs\n");
 
+<<<<<<< Updated upstream
+    
     printf("mutex <on|off>               Run mutex race demo\n");
     printf("lockvariable                 Run Lock Variable demo\n");
     printf("strict                       Run Strict Alternation demo\n");
@@ -98,6 +117,10 @@ static void print_help(void)
     printf("philosophers                 Run Dining Philosophers demo\n");
     printf("readerwriter                 Run Reader-Writer demo\n");
     printf("barber                       Run Sleeping Barber demo\n");
+    printf("memfit                       Compare First/Best/Worst Fit\n");
+    printf("memfixed                     Demonstrate fixed partitions\n");
+
+>>>>>>> Stashed changes
 
     printf("exit                         Exit program\n");
 

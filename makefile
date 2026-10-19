@@ -8,6 +8,8 @@ SRC = src/shell.c \
       src/states.c \
       src/scheduler.c \
       src/blood.c \
+<<<<<<< Updated upstream
+      
       src/logger.c \
       src/sync/race_mutex.c \
       src/sync/lock_variable.c \
@@ -20,7 +22,11 @@ SRC = src/shell.c \
       src/sync/bounded_buffer.c \
       src/sync/philosophers.c \
       src/sync/reader_writer.c \
-      src/sync/sleeping_barber.c
+      src/sync/sleeping_barber.c \
+      src/memory.c
+
+
+>>>>>>> Stashed changes
 
 OBJ = $(SRC:.c=.o)
 
