@@ -1,11 +1,7 @@
 CC = gcc
-
 CFLAGS = -Wall -Wextra -std=c99 -Iinclude
-
 LDFLAGS = -pthread
-
 TARGET = raktsetu
-
 
 SRC = src/shell.c \
       src/process.c \
@@ -15,25 +11,24 @@ SRC = src/shell.c \
       src/logger.c \
       src/sync/race_mutex.c \
       src/sync/lock_variable.c \
+      src/sync/strict_alternation.c \
       src/sync/peterson.c \
       src/sync/bakery.c \
       src/sync/test_and_set.c \
       src/sync/semaphore.c \
       src/sync/monitor.c \
       src/sync/bounded_buffer.c \
-      src/sync/philosophers.c
-
+      src/sync/philosophers.c \
+      src/sync/reader_writer.c \
+      src/sync/sleeping_barber.c
 
 OBJ = $(SRC:.c=.o)
-
 
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
-
 
 clean:
 	rm -f $(OBJ) $(TARGET)
