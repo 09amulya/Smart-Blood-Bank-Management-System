@@ -19,7 +19,8 @@ SRC = src/shell.c \
       src/sync/test_and_set.c \
       src/sync/semaphore.c \
       src/sync/monitor.c \
-      src/sync/bounded_buffer.c
+      src/sync/bounded_buffer.c \
+      src/sync/philosophers.c
 
 
 OBJ = $(SRC:.c=.o)

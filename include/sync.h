@@ -15,4 +15,6 @@ void run_monitor_demo(void);
 
 void run_bounded_buffer_demo(void);
 
+void run_philosophers_demo(void);
+
 #endif

@@ -71,6 +71,8 @@ static void print_help(void)
 
     printf("boundedbuffer                Run producer-consumer demo\n");
 
+    printf("philosophers                 Run Dining Philosophers demo\n");
+
     printf("exit                         Exit program\n");
 
     printf("========================================\n");
@@ -312,6 +314,16 @@ static void handle_bounded_buffer(void)
 
 
 /* -------------------------------------------------
+ * Dining Philosophers Demo
+ * ------------------------------------------------- */
+
+static void handle_philosophers(void)
+{
+    run_philosophers_demo();
+}
+
+
+/* -------------------------------------------------
  * Main
  * ------------------------------------------------- */
 
@@ -331,10 +343,7 @@ int main(void)
 
         printf("\nraktsetu> ");
 
-        if (fgets(input,
-                  sizeof(input),
-                  stdin) == NULL) {
-
+        if (fgets(input, sizeof(input), stdin) == NULL) {
             break;
         }
 
@@ -344,18 +353,21 @@ int main(void)
             continue;
 
 
+        /* HELP */
         if (strcmp(input, "help") == 0) {
 
             print_help();
         }
 
 
+        /* PROCESS TABLE */
         else if (strcmp(input, "ps") == 0) {
 
             print_process_table();
         }
 
 
+        /* BLOOD INVENTORY */
         else if (strcmp(input, "blood") == 0) {
 
             printf("\n========== BLOOD INVENTORY ==========\n");
@@ -366,60 +378,77 @@ int main(void)
         }
 
 
+        /* RUN SCHEDULER */
         else if (strcmp(input, "run") == 0) {
 
             handle_run();
         }
 
 
+        /* LOGS */
         else if (strcmp(input, "logs") == 0) {
 
             handle_logs();
         }
 
 
+        /* MUTEX */
         else if (strncmp(input, "mutex ", 6) == 0) {
 
             handle_mutex(input + 6);
         }
 
 
+        /* PETERSON */
         else if (strcmp(input, "peterson") == 0) {
 
             handle_peterson();
         }
 
 
+        /* BAKERY */
         else if (strcmp(input, "bakery") == 0) {
 
             handle_bakery();
         }
 
 
+        /* TEST-AND-SET */
         else if (strcmp(input, "testandset") == 0) {
 
             handle_test_and_set();
         }
 
 
+        /* SEMAPHORE */
         else if (strcmp(input, "semaphore") == 0) {
 
             handle_semaphore();
         }
 
 
+        /* MONITOR */
         else if (strcmp(input, "monitor") == 0) {
 
             handle_monitor();
         }
 
 
+        /* BOUNDED BUFFER */
         else if (strcmp(input, "boundedbuffer") == 0) {
 
             handle_bounded_buffer();
         }
 
 
+        /* DINING PHILOSOPHERS */
+        else if (strcmp(input, "philosophers") == 0) {
+
+            handle_philosophers();
+        }
+
+
+        /* EXIT */
         else if (strcmp(input, "exit") == 0) {
 
             printf("Shutting down RaktSetu prototype...\n");
@@ -428,18 +457,21 @@ int main(void)
         }
 
 
+        /* REQUEST */
         else if (strncmp(input, "request ", 8) == 0) {
 
             handle_request(input + 8);
         }
 
 
+        /* SCHEDULER */
         else if (strncmp(input, "schedule ", 9) == 0) {
 
             handle_schedule(input + 9);
         }
 
 
+        /* UNKNOWN COMMAND */
         else {
 
             printf("Unknown command: %s\n", input);
