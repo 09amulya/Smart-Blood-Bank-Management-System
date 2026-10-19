@@ -14,12 +14,14 @@ SRC = src/shell.c \
       src/blood.c \
       src/logger.c \
       src/sync/race_mutex.c \
+      src/sync/lock_variable.c \
       src/sync/peterson.c \
       src/sync/bakery.c \
       src/sync/test_and_set.c \
       src/sync/semaphore.c \
       src/sync/monitor.c \
-      src/sync/bounded_buffer.c
+      src/sync/bounded_buffer.c \
+      src/sync/philosophers.c
 
 
 OBJ = $(SRC:.c=.o)
