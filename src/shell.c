@@ -3,6 +3,7 @@
 #include <strings.h>
 #include <stdlib.h>
 
+#include "mlq_scheduler.h"
 #include "pcb.h"
 #include "blood.h"
 #include "scheduler.h"
@@ -88,7 +89,7 @@ static void print_help(void)
     printf("ps                           Show process table\n");
     printf("blood                        Show blood inventory\n");
 
-    printf("schedule <fcfs|priority>     Select scheduler\n");
+    printf("schedule <fcfs|priority|mlq> Select scheduler\n");
     printf("run                          Execute READY processes\n");
 
     printf("logs                         Show process state logs\n");
@@ -228,6 +229,12 @@ static void handle_sleeping_barber(void)
 int main(void)
 {
     char input[256];
+
+    /*
+     * 0 = Existing FCFS / Priority scheduler
+     * 1 = MLQ scheduler
+     */
+    int use_mlq = 0;
 
     printf("\n");
     printf("====================================\n");
@@ -445,34 +452,86 @@ int main(void)
             else
                 printf("Failed to create process.\n");
         }
+
+        /* -------------------------------------------------
+         * Scheduler selection
+         * ------------------------------------------------- */
         else if (strncmp(input, "schedule ", 9) == 0)
         {
-            SchedAlgo algo;
+            const char *name = input + 9;
 
-            if (scheduler_parse(input + 9, &algo) == 0)
+            /*
+             * MLQ uses the separate mlq_scheduler.c module.
+             */
+            if (strcasecmp(name, "mlq") == 0)
             {
-                scheduler_set(algo);
+                use_mlq = 1;
+
+                printf("\n");
+                printf("Scheduler set to MLQ.\n");
+                printf("Q0: CRITICAL -> Priority\n");
+                printf("Q1: URGENT   -> Round Robin (q=2)\n");
+                printf("Q2: NORMAL   -> FCFS\n");
+                printf("Aging enabled: threshold = 6\n");
+            }
+            else
+            {
+                SchedAlgo algo;
+
+                if (scheduler_parse(name, &algo) == 0)
+                {
+                    /*
+                     * Switch back to existing scheduler.
+                     */
+                    use_mlq = 0;
+
+                    scheduler_set(algo);
+
+                    printf(
+                        "Scheduler set to %s.\n",
+                        scheduler_name(algo)
+                    );
+                }
+                else
+                {
+                    printf(
+                        "Usage: schedule <fcfs|priority|mlq>\n"
+                    );
+                }
+            }
+        }
+
+        /* -------------------------------------------------
+         * Run selected scheduler
+         * ------------------------------------------------- */
+        else if (strcmp(input, "run") == 0)
+        {
+            int executed;
+
+            if (use_mlq)
+            {
+                /*
+                 * Run Amulya's MLQ + Aging scheduler.
+                 */
+                executed = mlq_scheduler_run(1);
 
                 printf(
-                    "Scheduler set to %s.\n",
-                    scheduler_name(algo)
+                    "MLQ Scheduler executed %d process(es).\n",
+                    executed
                 );
             }
             else
             {
+                /*
+                 * Run existing FCFS / Priority scheduler.
+                 */
+                executed = scheduler_run(1);
+
                 printf(
-                    "Usage: schedule <fcfs|priority>\n"
+                    "Scheduler executed %d process(es).\n",
+                    executed
                 );
             }
-        }
-        else if (strcmp(input, "run") == 0)
-        {
-            int executed = scheduler_run(1);
-
-            printf(
-                "Scheduler executed %d process(es).\n",
-                executed
-            );
         }
         else
         {
