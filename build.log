@@ -1,0 +1,33 @@
+gcc src/shell.o src/process.o src/states.o src/scheduler.o src/blood.o src/logger.o src/sync/race_mutex.o src/sync/lock_variable.o src/sync/strict_alternation.o src/sync/peterson.o src/sync/bakery.o src/sync/test_and_set.o src/sync/semaphore.o src/sync/monitor.o src/sync/bounded_buffer.o src/sync/philosophers.o src/sync/reader_writer.o src/sync/sleeping_barber.o src/memory.o src/paging.o src/virtual_memory.o src/file_allocation.o src/memory.o src/paging.o src/virtual_memory.o src/file_allocation.o src/mlq_scheduler.o src/disk_scheduling.o -o raktsetu -pthread
+/usr/bin/ld: src/memory.o: in function `memory_fixed_demo':
+memory.c:(.text+0x3a5): multiple definition of `memory_fixed_demo'; src/memory.o:memory.c:(.text+0x3a5): first defined here
+/usr/bin/ld: src/memory.o: in function `memory_fit_demo':
+memory.c:(.text+0x576): multiple definition of `memory_fit_demo'; src/memory.o:memory.c:(.text+0x576): first defined here
+/usr/bin/ld: src/paging.o: in function `paging_demo':
+paging.c:(.text+0x0): multiple definition of `paging_demo'; src/paging.o:paging.c:(.text+0x0): first defined here
+/usr/bin/ld: src/paging.o: in function `segmentation_demo':
+paging.c:(.text+0x1dd): multiple definition of `segmentation_demo'; src/paging.o:paging.c:(.text+0x1dd): first defined here
+/usr/bin/ld: src/paging.o: in function `segmented_paging_demo':
+paging.c:(.text+0x360): multiple definition of `segmented_paging_demo'; src/paging.o:paging.c:(.text+0x360): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `demand_paging_demo':
+virtual_memory.c:(.text+0x92): multiple definition of `demand_paging_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0x92): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `fifo_demo':
+virtual_memory.c:(.text+0x15d): multiple definition of `fifo_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0x15d): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `lru_demo':
+virtual_memory.c:(.text+0x2d6): multiple definition of `lru_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0x2d6): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `optimal_demo':
+virtual_memory.c:(.text+0x4bf): multiple definition of `optimal_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0x4bf): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `lfu_demo':
+virtual_memory.c:(.text+0x6ad): multiple definition of `lfu_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0x6ad): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `belady_anomaly_demo':
+virtual_memory.c:(.text+0x9ae): multiple definition of `belady_anomaly_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0x9ae): first defined here
+/usr/bin/ld: src/virtual_memory.o: in function `thrashing_demo':
+virtual_memory.c:(.text+0xaaa): multiple definition of `thrashing_demo'; src/virtual_memory.o:virtual_memory.c:(.text+0xaaa): first defined here
+/usr/bin/ld: src/file_allocation.o: in function `contiguous_allocation_demo':
+file_allocation.c:(.text+0x0): multiple definition of `contiguous_allocation_demo'; src/file_allocation.o:file_allocation.c:(.text+0x0): first defined here
+/usr/bin/ld: src/file_allocation.o: in function `linked_allocation_demo':
+file_allocation.c:(.text+0xe7): multiple definition of `linked_allocation_demo'; src/file_allocation.o:file_allocation.c:(.text+0xe7): first defined here
+/usr/bin/ld: src/file_allocation.o: in function `indexed_allocation_demo':
+file_allocation.c:(.text+0x1e4): multiple definition of `indexed_allocation_demo'; src/file_allocation.o:file_allocation.c:(.text+0x1e4): first defined here
+collect2: error: ld returned 1 exit status
+make: *** [makefile:40: raktsetu] Error 1
