@@ -27,6 +27,7 @@ SRC = src/shell.c \
       src/virtual_memory.c \
       src/bankers.c \
       src/file_allocation.c \
+      src/mlq_scheduler.c \
       src/disk_scheduling.c
 
 OBJ = $(SRC:.c=.o)
